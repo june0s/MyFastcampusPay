@@ -7,6 +7,10 @@ buildscript {
 plugins {
     id 'org.springframework.boot' version('2.5.2')
     id 'java'
+    id 'com.palantir.docker' version '0.25.0'
+}
+ext{
+    axonVersion = "4.6.0"
 }
 
 compileJava {
@@ -21,7 +25,7 @@ apply plugin: 'io.spring.dependency-management'
 
 
 group 'org.fastcampuspay.membership'
-version '1.0-SNAPSHOT'
+version '1.0.0'
 
 repositories {
     mavenCentral()
@@ -51,4 +55,17 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+// gradle build 과정에서 docker 이미지도 생성되게 하려고 추가
+docker {
+    println(tasks.bootJar.outputs.files)
+    // - 이미지 이름. rootProject.name 에 대문자가 있어 docker 이미지 이름으로 사용할 수 없다.
+    name 'fcampay'+'-'+project.name + ':' + version
+    // - 사용할 Dockerfile
+    dockerfile file('./Dockerfile')
+    // - 복사할 파일들
+    files tasks.bootJar.outputs.files
+    // - Dockerfile 에 전달할 파라미터
+    buildArgs(['JAR_FILE': tasks.bootJar.outputs.files.singleFile.name])
 }
