@@ -25,7 +25,7 @@ apply plugin: 'io.spring.dependency-management'
 
 
 group 'org.fastcampuspay.membership'
-version '1.0.0'
+version '1.0.2'
 
 repositories {
     mavenCentral()
@@ -50,7 +50,8 @@ dependencies {
 
     testImplementation 'junit:junit:4.13.1'
 
-    runtimeOnly 'com.h2database:h2'
+//    runtimeOnly 'com.h2database:h2'
+    runtimeOnly 'mysql:mysql-connector-java'
 }
 
 test {
@@ -63,7 +64,7 @@ docker {
     // - 이미지 이름. rootProject.name 에 대문자가 있어 docker 이미지 이름으로 사용할 수 없다.
     name 'fcampay'+'-'+project.name + ':' + version
     // - 사용할 Dockerfile
-    dockerfile file('./Dockerfile')
+    dockerfile file('../Dockerfile')
     // - 복사할 파일들
     files tasks.bootJar.outputs.files
     // - Dockerfile 에 전달할 파라미터
