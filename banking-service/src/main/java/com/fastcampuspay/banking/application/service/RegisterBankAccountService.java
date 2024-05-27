@@ -6,7 +6,7 @@ import com.fastcampuspay.banking.application.port.out.RequestBankAccountInfoPort
 import com.fastcampuspay.common.UseCase;
 import com.fastcampuspay.banking.adapter.out.persistence.RegisterBankAccountJpaEntity;
 import com.fastcampuspay.banking.adapter.out.persistence.RegisterBankAccountMapper;
-import com.fastcampuspay.banking.application.port.in.RegisterBankAccountCommand;
+import com.fastcampuspay.banking.application.port.in.RequestFirmbankingCommand;
 import com.fastcampuspay.banking.application.port.in.RegisterBankAccountUseCase;
 import com.fastcampuspay.banking.application.port.out.RegisterBankAccountPort;
 import com.fastcampuspay.banking.domain.RegisteredBankAccount;
@@ -23,7 +23,7 @@ public class RegisterBankAccountService implements RegisterBankAccountUseCase {
     private final RequestBankAccountInfoPort requestBankAccountInfoPort;
 
     @Override
-    public RegisteredBankAccount registerBankAccount(RegisterBankAccountCommand command) {
+    public RegisteredBankAccount registerBankAccount(RequestFirmbankingCommand command) {
 
         // 은행 계좌를 등록해야하는 서비스(비즈니스 로직)
 

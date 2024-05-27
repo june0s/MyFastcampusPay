@@ -1,6 +1,6 @@
 package com.fastcampuspay.banking.adapter.in.web;
 
-import com.fastcampuspay.banking.application.port.in.RegisterBankAccountCommand;
+import com.fastcampuspay.banking.application.port.in.RequestFirmbankingCommand;
 import com.fastcampuspay.banking.application.port.in.RegisterBankAccountUseCase;
 import com.fastcampuspay.banking.domain.RegisteredBankAccount;
 import com.fastcampuspay.common.WebAdapter;
@@ -22,7 +22,7 @@ public class RegisterBankAccountController {
         // request 처리 ...
 
         // 1. 중간 계층 추상화 request -> Command, request 변경에 port 가 영향 없게 하려고.
-        RegisterBankAccountCommand command = RegisterBankAccountCommand.builder()
+        RequestFirmbankingCommand command = RequestFirmbankingCommand.builder()
                 .membershipId(request.getMembershipId())
                 .bankAccountNumber(request.getBankName())
                 .bankName(request.getBankAccountNumber())
