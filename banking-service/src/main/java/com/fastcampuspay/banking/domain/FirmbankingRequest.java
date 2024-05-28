@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Value;
 
+import java.util.UUID;
+
 // 접근 제어자를 PRIVATE 으로 설정. 클래스 내의 해당 멤버를 수정할 수 있다 - 아키텍처 적으로 좀 더 clean 하다고 함.
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class FirmbankingRequest {
@@ -16,7 +18,7 @@ public class FirmbankingRequest {
     @Getter private final String toBankAccountNumber;
     @Getter private final int moneyAccount;
     @Getter private final int firmbankingStatus; // 0: 요청, 1: 완료, 2: 실패
-
+    @Getter private final UUID uuid;
 
     // FirmbankingRequest 클래스는 오염이 되면 안되는 클래스. 고객 정보. 핵심 도메인. 안전하게 관리해야 한다.
     // -> 멤버 변수 를 private final 로 설정하고, 클래스 접근 제어자를 PRIVATE 으로 설정. 새롭게 클래스 생성하는 것이 어려워진다.
@@ -27,7 +29,9 @@ public class FirmbankingRequest {
             , ToBankName toBankName
             , ToBankAccountNumber toBankAccountNumber
             , MoneyAccount moneyAccount
-            , FirmbankingStatus firmbankingStatus) {
+            , FirmbankingStatus firmbankingStatus
+            , UUID uuid
+    ) {
         return new FirmbankingRequest(
                 firmbankingRequestId.firmbankingRequestId
                 , fromBankName.fromBankName
@@ -36,6 +40,7 @@ public class FirmbankingRequest {
                 , toBankAccountNumber.toBankAccountNumber
                 , moneyAccount.moneyAccount
                 , firmbankingStatus.firmbankingStatus
+                , uuid
         );
     }
 
