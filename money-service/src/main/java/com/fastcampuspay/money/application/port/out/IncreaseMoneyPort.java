@@ -1,0 +1,22 @@
+package com.fastcampuspay.money.application.port.out;
+
+import com.fastcampuspay.money.adapter.out.persistence.MemberMoneyJpaEntity;
+import com.fastcampuspay.money.adapter.out.persistence.MoneyChangingRequestJpaEntity;
+import com.fastcampuspay.money.domain.MemberMoney;
+import com.fastcampuspay.money.domain.MoneyChangingRequest;
+
+public interface IncreaseMoneyPort {
+
+    MoneyChangingRequestJpaEntity createChangingRequest(
+            MoneyChangingRequest.TargetMembershipId targetMembershipId
+            , MoneyChangingRequest.MoneyChangingType moneyChangingType
+            , MoneyChangingRequest.ChangingMoneyAmount changingMoneyAmount
+            , MoneyChangingRequest.MoneyChangingStatus moneyChangingStatus
+            , MoneyChangingRequest.Uuid uuid
+    );
+
+    MemberMoneyJpaEntity increaseMoney(
+            MemberMoney.MembershipId membershipId
+            , int increaseMoneyAmount
+    );
+}
