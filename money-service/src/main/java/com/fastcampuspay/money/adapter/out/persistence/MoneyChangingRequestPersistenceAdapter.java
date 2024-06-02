@@ -7,6 +7,7 @@ import com.fastcampuspay.common.PersistenceAdapter;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.UUID;
 
 @PersistenceAdapter
@@ -34,17 +35,18 @@ public class MoneyChangingRequestPersistenceAdapter implements IncreaseMoneyPort
     public MemberMoneyJpaEntity increaseMoney(MemberMoney.MembershipId membershipId, int increaseMoneyAmount) {
         MemberMoneyJpaEntity entity;
         try {
-            entity = memberMoneyRepository.getById(Long.parseLong(membershipId.getMembershipId()));
+            final List<MemberMoneyJpaEntity> entityList = memberMoneyRepository.findByMembershipId(Long.parseLong(membershipId.getMembershipId()));
+            entity = entityList.get(0); // 일단 첫번째 entity 라고 하자.
 
+            entity.setBalance(entity.getBalance() + increaseMoneyAmount);
+            return memberMoneyRepository.save(entity);
         } catch (Exception e) {
             entity = new MemberMoneyJpaEntity(
                     membershipId.getMembershipId()
                     , increaseMoneyAmount
             );
-            return memberMoneyRepository.save(entity);
+            entity = memberMoneyRepository.save(entity);
+            return entity;
         }
-
-        entity.setBalance(entity.getBalance() + increaseMoneyAmount);
-        return memberMoneyRepository.save(entity);
     }
 }
