@@ -5,6 +5,7 @@ import com.fastcampuspay.money.application.port.in.IncreaseMoneyRequestCommand;
 import com.fastcampuspay.money.application.port.in.IncreaseMoneyRequestUseCase;
 import com.fastcampuspay.money.domain.MoneyChangingRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @WebAdapter
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class RequestMoneyChangingController {
 
     private final IncreaseMoneyRequestUseCase increaseMoneyRequestUseCase;
@@ -36,6 +38,36 @@ public class RequestMoneyChangingController {
                 .build();
 
         final MoneyChangingRequest moneyChangingRequest = increaseMoneyRequestUseCase.increaseMoneyRequest(command);
+        final MoneyChangingResultDetail resultDetail = new MoneyChangingResultDetail(
+                moneyChangingRequest.getMoneyChangingRequestId(),
+                0, // INCREASE
+                0, // SUCCESS
+                moneyChangingRequest.getChangingMoneyAmount()
+        );
+
+//        return new MoneyChaningResultDetailMapper().mapToMoneyChangingResultDetail(moneyChangingRequest);
+        return resultDetail;
+    }
+
+    @PostMapping(path = "/money/increase-async")
+    MoneyChangingResultDetail increaseMoneyChangingRequestAsync(@RequestBody IncreaseMoneyChangingRequest request) {
+        log.info("1. POST /money/increase-async :)");
+        // request 처리 ...
+
+        // 2. Usecase 를 통해서 요청을 처리할 거다. (command 를 인자로 받을 거다)
+        // - membership 을 등록하는 사용 예이고, 이것을 interface 화 해볼 것이다.
+//        MoneyChangingRequest moneyChangingRequest = increaseMoneyRequestUseCase.registerBankAccount(command);
+//        if (moneyChangingRequest == null) {
+//            // Todo: error handling
+//            System.out.println("등록 실패");
+//            return null;
+//        }
+        IncreaseMoneyRequestCommand command = IncreaseMoneyRequestCommand.builder()
+                .targetMembershipId(request.getTargetMembershipId())
+                .amount(request.getAmount())
+                .build();
+
+        final MoneyChangingRequest moneyChangingRequest = increaseMoneyRequestUseCase.increaseMoneyRequestAsync(command);
         final MoneyChangingResultDetail resultDetail = new MoneyChangingResultDetail(
                 moneyChangingRequest.getMoneyChangingRequestId(),
                 0, // INCREASE
