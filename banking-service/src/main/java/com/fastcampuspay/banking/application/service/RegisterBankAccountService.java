@@ -2,6 +2,8 @@ package com.fastcampuspay.banking.application.service;
 
 import com.fastcampuspay.banking.adapter.out.external.bank.BankAccount;
 import com.fastcampuspay.banking.adapter.out.external.bank.GetBankAccountRequest;
+import com.fastcampuspay.banking.application.port.out.GetMembershipPort;
+import com.fastcampuspay.banking.application.port.out.MembershipStatus;
 import com.fastcampuspay.banking.application.port.out.RequestBankAccountInfoPort;
 import com.fastcampuspay.common.UseCase;
 import com.fastcampuspay.banking.adapter.out.persistence.RegisterBankAccountJpaEntity;
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class RegisterBankAccountService implements RegisterBankAccountUseCase {
 
+    private final GetMembershipPort getMembershipPort;
     private final RegisterBankAccountPort registerBankAccountPort;
     private final RegisterBankAccountMapper mapper;
     private final RequestBankAccountInfoPort requestBankAccountInfoPort;
@@ -27,8 +30,11 @@ public class RegisterBankAccountService implements RegisterBankAccountUseCase {
 
         // 은행 계좌를 등록해야하는 서비스(비즈니스 로직)
 
-        // {멤버 서비스 확인?} 지금은 skip
-//        command.getMembershipId();
+        // 멤버 서비스 확인
+        final MembershipStatus membershipStatus = getMembershipPort.getMembership(command.getMembershipId());
+        if (!membershipStatus.isValid()) {
+            return null;
+        }
 
         // 1. 외부 실제 은행에 등록 가능한 계좌인지(정상인지) 확인
         // 외부의 은행에 이 계좌가 정상인지 확인 해야한다.
