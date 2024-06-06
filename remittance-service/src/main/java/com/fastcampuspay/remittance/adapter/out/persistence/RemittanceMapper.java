@@ -9,8 +9,9 @@ import java.util.UUID;
 @Component
 public class RemittanceMapper {
     public Remittance mapToDomainEntity(RemittanceJpaEntity remittanceJpaEntity, UUID uuid) {
-        return Remittance.generateRemittance(
-
-        );
+//        return Remittance.generateRemittance(
+//
+//        );
+        return null;
     }
 }

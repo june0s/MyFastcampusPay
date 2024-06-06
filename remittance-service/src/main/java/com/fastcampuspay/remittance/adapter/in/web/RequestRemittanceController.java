@@ -17,11 +17,13 @@ public class RequestRemittanceController {
     private final RequestRemittanceUseCase requestRemittanceUseCase;
     @PostMapping(path = "/remittance/request")
     RemittanceRequest requestRemittance(@RequestBody RequestRemittanceRequest request) {
+
         RequestRemittanceCommand command = RequestRemittanceCommand.builder()
-                .membershipId(request.getMembershipId())
-                .bankName(request.getBankName())
-                .bankAccountNumber(request.getBankAccountNumber())
-                .isValid(request.isValid())
+                .fromMembershipId(request.getFromMembershipId())
+                .toMembershipId(request.getToMembershipId())
+                .toBankName(request.getToBankName())
+                .toBankAccountNumber(request.getToBankAccountNumber())
+                .amount(request.getAmount())
                 .build();
 
         return requestRemittanceUseCase.requestRemittance(command);

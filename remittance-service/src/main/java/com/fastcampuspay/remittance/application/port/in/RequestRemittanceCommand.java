@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Builder
@@ -13,21 +14,29 @@ import javax.validation.constraints.NotNull;
 public class RequestRemittanceCommand extends SelfValidating<RequestRemittanceCommand> {
 
     @NotNull
-    private final String membershipId;
+    private final String fromMembershipId;
+
+    private final String toMembershipId;
 
     @NotNull
-    private final String bankName;
+    private final String toBankName;
 
     @NotNull
-    private final String bankAccountNumber;
+    private final String toBankAccountNumber;
 
-    private final boolean isValid;
+    private final int remittanceType; // 0: membership 계좌(내부 고객), 1: bank 계좌(외부 은행 계좌)
 
-    public RequestRemittanceCommand(String membershipId, String bankName, String bankAccountNumber, boolean isValid) {
-        this.membershipId = membershipId;
-        this.bankName = bankName;
-        this.bankAccountNumber = bankAccountNumber;
-        this.isValid = isValid;
+    @NotNull
+    @NotBlank
+    private final int amount;
+
+    public RequestRemittanceCommand(String fromMembershipId, String toMembershipId, String toBankName, String toBankAccountNumber, int remittanceType, int amount) {
+        this.fromMembershipId = fromMembershipId;
+        this.toMembershipId = toMembershipId;
+        this.toBankName = toBankName;
+        this.toBankAccountNumber = toBankAccountNumber;
+        this.remittanceType = remittanceType;
+        this.amount = amount;
 
         this.validateSelf();
     }
