@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class MembershipStatus {
     private String membershipId;
-    private String isValid;
+    private boolean isValid;
 }

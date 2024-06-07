@@ -13,6 +13,7 @@ public class RemittanceRequest { // 송금 요청에 대한 상태 클래스.
     @Getter private final String toBankAccountNumber;
     @Getter private final int remittanceType; // 0: membership 계좌(내부 고객), 1: bank 계좌(외부 은행 계좌)
     @Getter private final int amount; // 송금 요청 금액.
+    @Getter private final String remittanceStatus;
 
     @Value
     public static class RemittanceRequestId {
@@ -57,6 +58,13 @@ public class RemittanceRequest { // 송금 요청에 대한 상태 클래스.
         }
         int amount;
     }
+    @Value
+    public static class RemittanceStatus {
+        public RemittanceStatus(String value) {
+            this.remittanceStatus = value;
+        }
+        String remittanceStatus;
+    }
 
     public static RemittanceRequest generateRemittanceRequest(
             RemittanceRequestId remittanceRequestId,
@@ -64,7 +72,8 @@ public class RemittanceRequest { // 송금 요청에 대한 상태 클래스.
             ToBankName toBankName,
             ToBankAccountNumber toBankAccountNumber,
             RemittanceType remittanceType,
-            Amount amount
+            Amount amount,
+            RemittanceStatus remittanceStatus
     )
     {
         return new RemittanceRequest(
@@ -73,7 +82,8 @@ public class RemittanceRequest { // 송금 요청에 대한 상태 클래스.
                 toBankName.getToBankName(),
                 toBankAccountNumber.getToBankAccountNumber(),
                 remittanceType.getRemittanceType(),
-                amount.getAmount()
+                amount.getAmount(),
+                remittanceStatus.getRemittanceStatus()
         );
     }
 }
