@@ -1,6 +1,8 @@
 package com.fastcampuspay.money.adapter.in.web;
 
 import com.fastcampuspay.common.WebAdapter;
+import com.fastcampuspay.money.application.port.in.CreateMemberMoneyUseCase;
+import com.fastcampuspay.money.application.port.in.CreateMoneyRequestCommand;
 import com.fastcampuspay.money.application.port.in.IncreaseMoneyRequestCommand;
 import com.fastcampuspay.money.application.port.in.IncreaseMoneyRequestUseCase;
 import com.fastcampuspay.money.domain.MoneyChangingRequest;
@@ -18,6 +20,8 @@ public class RequestMoneyChangingController {
 
     private final IncreaseMoneyRequestUseCase increaseMoneyRequestUseCase;
 //    private final DecreaseMoneyRequestUseCase decreaseMoneyRequestUseCase;
+
+    private final CreateMemberMoneyUseCase createMemberMoneyUseCase;
 
     @PostMapping(path = "/money/increase")
     MoneyChangingResultDetail increaseMoneyChangingRequest(@RequestBody IncreaseMoneyChangingRequest request) {
@@ -94,5 +98,11 @@ public class RequestMoneyChangingController {
 //        }
 //        final MoneyChangingRequest moneyChangingRequest1 = increaseMoneyRequestUseCase.increaseMoneyRequest(command);
         return null;
+    }
+
+    @PostMapping(path = "/money/create-member-money")
+    void createMemberMoney(@RequestBody CreateMemberMoneyRequest request) {
+        createMemberMoneyUseCase.createMemberMoneyUseCase(
+                CreateMoneyRequestCommand.builder().membershipId(request.getMembershipId()).build());
     }
 }

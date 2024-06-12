@@ -6,6 +6,8 @@ import com.fastcampuspay.common.SubTask;
 import com.fastcampuspay.common.UseCase;
 import com.fastcampuspay.money.adapter.out.persistence.MemberMoneyJpaEntity;
 import com.fastcampuspay.money.adapter.out.persistence.MoneyChangingRequestMapper;
+import com.fastcampuspay.money.application.port.in.CreateMemberMoneyUseCase;
+import com.fastcampuspay.money.application.port.in.CreateMoneyRequestCommand;
 import com.fastcampuspay.money.application.port.in.IncreaseMoneyRequestCommand;
 import com.fastcampuspay.money.application.port.in.IncreaseMoneyRequestUseCase;
 import com.fastcampuspay.money.application.port.out.GetMembershipPort;
@@ -16,6 +18,7 @@ import com.fastcampuspay.money.domain.MemberMoney;
 import com.fastcampuspay.money.domain.MoneyChangingRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -26,13 +29,15 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Transactional
 @Slf4j
-public class IncreaseMoneyRequestService implements IncreaseMoneyRequestUseCase {
+public class IncreaseMoneyRequestService implements IncreaseMoneyRequestUseCase, CreateMemberMoneyUseCase {
 
     private final CountDownLatchManager countDownLatchManager;
     private final SendRechargingMoneyTaskPort sendRechargingMoneyTaskPort;
     private final GetMembershipPort getMembershipPort;
     private final IncreaseMoneyPort increaseMoneyPort;
     private final MoneyChangingRequestMapper mapper;
+
+    private final CommandGateway commandGateway;
 
     @Override
     public MoneyChangingRequest increaseMoneyRequest(IncreaseMoneyRequestCommand command) {
@@ -155,6 +160,12 @@ public class IncreaseMoneyRequestService implements IncreaseMoneyRequestUseCase 
         // 5. consume ok -> logic 실행.
 
         return null;
+    }
+
+    @Override
+    public void createMemberMoneyUseCase(CreateMoneyRequestCommand command) {
+        // axon framework를 위한 axon framework 전용 멤버 머니를 만들기 위한 command 를 정의해보자.
+        commandGateway.send(command);
     }
 
 //    @Override
