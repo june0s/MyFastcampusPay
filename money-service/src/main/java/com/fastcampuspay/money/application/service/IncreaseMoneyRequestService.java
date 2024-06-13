@@ -4,12 +4,10 @@ import com.fastcampuspay.common.CountDownLatchManager;
 import com.fastcampuspay.common.RechargingMoneyTask;
 import com.fastcampuspay.common.SubTask;
 import com.fastcampuspay.common.UseCase;
+import com.fastcampuspay.money.adapter.axon.command.MemberMoneyCreatedCommand;
 import com.fastcampuspay.money.adapter.out.persistence.MemberMoneyJpaEntity;
 import com.fastcampuspay.money.adapter.out.persistence.MoneyChangingRequestMapper;
-import com.fastcampuspay.money.application.port.in.CreateMemberMoneyUseCase;
-import com.fastcampuspay.money.application.port.in.CreateMoneyRequestCommand;
-import com.fastcampuspay.money.application.port.in.IncreaseMoneyRequestCommand;
-import com.fastcampuspay.money.application.port.in.IncreaseMoneyRequestUseCase;
+import com.fastcampuspay.money.application.port.in.*;
 import com.fastcampuspay.money.application.port.out.GetMembershipPort;
 import com.fastcampuspay.money.application.port.out.IncreaseMoneyPort;
 import com.fastcampuspay.money.application.port.out.MembershipStatus;
@@ -35,6 +33,7 @@ public class IncreaseMoneyRequestService implements IncreaseMoneyRequestUseCase,
     private final SendRechargingMoneyTaskPort sendRechargingMoneyTaskPort;
     private final GetMembershipPort getMembershipPort;
     private final IncreaseMoneyPort increaseMoneyPort;
+    private final CreateMemberMoneyPort createMemberMoneyPort;
     private final MoneyChangingRequestMapper mapper;
 
     private final CommandGateway commandGateway;
@@ -165,7 +164,21 @@ public class IncreaseMoneyRequestService implements IncreaseMoneyRequestUseCase,
     @Override
     public void createMemberMoneyUseCase(CreateMoneyRequestCommand command) {
         // axon framework를 위한 axon framework 전용 멤버 머니를 만들기 위한 command 를 정의해보자.
-        commandGateway.send(command);
+
+        MemberMoneyCreatedCommand axonCommand = new MemberMoneyCreatedCommand(command.getMembershipId());
+
+        // command 보내고, 이벤트 처리될 때까지 기다린다.
+        commandGateway.send(axonCommand).whenComplete((result, exception) -> {
+            // 이벤트 받으면 jpa 사용해서 db 에 저장한다.
+            if (exception != null) {
+                System.out.println("exception: " + exception.getMessage());
+            } else {
+                System.out.println("result: " + result);
+                createMemberMoneyPort.createMemberMoney(
+                        new MemberMoney.MembershipId(command.getMembershipId()),
+                        new MemberMoney.MoneyAggregateIdentifier(result.toString()));
+            }
+        });
     }
 
 //    @Override

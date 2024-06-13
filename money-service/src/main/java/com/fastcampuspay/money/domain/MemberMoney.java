@@ -60,4 +60,12 @@ public class MemberMoney {
         }
         int balance;
     }
+    @Value
+    public static class MoneyAggregateIdentifier {
+        // RDB 상의 uuid 와 axon framework 가 aggregate를 unique 하게 취급하기 위한 uuid
+        public MoneyAggregateIdentifier(String value) {
+            this.moneyAggregateIdentifier = value;
+        }
+        String moneyAggregateIdentifier;
+    }
 }

@@ -1,6 +1,7 @@
 package com.fastcampuspay.money.adapter.out.persistence;
 
 import com.fastcampuspay.common.PersistenceAdapter;
+import com.fastcampuspay.money.application.port.in.CreateMemberMoneyPort;
 import com.fastcampuspay.money.application.port.out.IncreaseMoneyPort;
 import com.fastcampuspay.money.domain.MemberMoney;
 import com.fastcampuspay.money.domain.MoneyChangingRequest;
@@ -12,7 +13,7 @@ import java.util.UUID;
 
 @PersistenceAdapter
 @RequiredArgsConstructor
-public class MoneyChangingRequestPersistenceAdapter implements IncreaseMoneyPort {
+public class MoneyChangingRequestPersistenceAdapter implements IncreaseMoneyPort, CreateMemberMoneyPort {
 
     private final SpringDataMoneyChangingRequestRepository moneyChangingRequestRepository;
     private final SpringDataMemberMoneyRepository memberMoneyRepository;
@@ -42,11 +43,21 @@ public class MoneyChangingRequestPersistenceAdapter implements IncreaseMoneyPort
             return memberMoneyRepository.save(entity);
         } catch (Exception e) {
             entity = new MemberMoneyJpaEntity(
-                    membershipId.getMembershipId()
-                    , increaseMoneyAmount
+                    Long.parseLong(membershipId.getMembershipId()),
+                    increaseMoneyAmount, ""
             );
             entity = memberMoneyRepository.save(entity);
             return entity;
         }
+    }
+
+    @Override
+    public void createMemberMoney(MemberMoney.MembershipId membershipId, MemberMoney.MoneyAggregateIdentifier identifier) {
+        MemberMoneyJpaEntity entity = new MemberMoneyJpaEntity(
+                Long.parseLong(membershipId.getMembershipId()),
+                0,
+                identifier.getMoneyAggregateIdentifier()
+        );
+        memberMoneyRepository.save(entity);
     }
 }
