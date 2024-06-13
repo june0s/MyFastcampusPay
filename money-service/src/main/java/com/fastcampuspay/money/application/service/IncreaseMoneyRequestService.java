@@ -34,6 +34,7 @@ public class IncreaseMoneyRequestService implements IncreaseMoneyRequestUseCase,
     private final GetMembershipPort getMembershipPort;
     private final IncreaseMoneyPort increaseMoneyPort;
     private final CreateMemberMoneyPort createMemberMoneyPort;
+    private final GetMemberMoneyPort getMemberMoneyPort;
     private final MoneyChangingRequestMapper mapper;
 
     private final CommandGateway commandGateway;
@@ -157,6 +158,25 @@ public class IncreaseMoneyRequestService implements IncreaseMoneyRequestUseCase,
         }
 
         // 5. consume ok -> logic 실행.
+
+        return null;
+    }
+
+    @Override
+    public MoneyChangingRequest increaseMoneyRequestByEvent(IncreaseMoneyRequestCommand command) {
+        final MemberMoneyJpaEntity memberMoneyJpaEntity = getMemberMoneyPort.getMemberMoney(
+                new MemberMoney.MembershipId(command.getTargetMembershipId()));
+
+
+
+        // command
+        commandGateway.send(command).whenComplete((result, throwable) -> {
+            if (throwable != null) {
+                System.out.println("exception: " + throwable.getMessage());
+            } else {
+                System.out.println("result: " + result);
+            }
+        });
 
         return null;
     }
