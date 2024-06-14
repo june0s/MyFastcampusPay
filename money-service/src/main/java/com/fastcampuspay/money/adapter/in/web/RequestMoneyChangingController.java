@@ -108,19 +108,19 @@ public class RequestMoneyChangingController {
 
     // eda 방식으로 구현(money increase 충전.)
     @PostMapping(path = "/money/increase-eda")
-    MoneyChangingResultDetail increaseMoneyChangingRequestByEvent(@RequestBody IncreaseMoneyChangingRequest request) {
+    void increaseMoneyChangingRequestByEvent(@RequestBody IncreaseMoneyChangingRequest request) {
         IncreaseMoneyRequestCommand command = IncreaseMoneyRequestCommand.builder()
                 .targetMembershipId(request.getTargetMembershipId())
                 .amount(request.getAmount())
                 .build();
 
-        final MoneyChangingRequest moneyChangingRequest = increaseMoneyRequestUseCase.increaseMoneyRequestByEvent(command);
-        final MoneyChangingResultDetail resultDetail = new MoneyChangingResultDetail(
-                moneyChangingRequest.getMoneyChangingRequestId(),
-                0, // INCREASE
-                0, // SUCCESS
-                moneyChangingRequest.getChangingMoneyAmount()
-        );
-        return resultDetail;
+        increaseMoneyRequestUseCase.increaseMoneyRequestByEvent(command);
+//        final MoneyChangingResultDetail resultDetail = new MoneyChangingResultDetail(
+//                moneyChangingRequest.getMoneyChangingRequestId(),
+//                0, // INCREASE
+//                0, // SUCCESS
+//                moneyChangingRequest.getChangingMoneyAmount()
+//        );
+//        return resultDetail;
     }
 }

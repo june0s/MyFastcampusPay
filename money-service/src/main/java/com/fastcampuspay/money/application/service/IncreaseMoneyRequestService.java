@@ -4,6 +4,7 @@ import com.fastcampuspay.common.CountDownLatchManager;
 import com.fastcampuspay.common.RechargingMoneyTask;
 import com.fastcampuspay.common.SubTask;
 import com.fastcampuspay.common.UseCase;
+import com.fastcampuspay.money.adapter.axon.command.IncreaseMemberMoneyCommand;
 import com.fastcampuspay.money.adapter.axon.command.MemberMoneyCreatedCommand;
 import com.fastcampuspay.money.adapter.out.persistence.MemberMoneyJpaEntity;
 import com.fastcampuspay.money.adapter.out.persistence.MoneyChangingRequestMapper;
@@ -163,22 +164,33 @@ public class IncreaseMoneyRequestService implements IncreaseMoneyRequestUseCase,
     }
 
     @Override
-    public MoneyChangingRequest increaseMoneyRequestByEvent(IncreaseMoneyRequestCommand command) {
+    public void increaseMoneyRequestByEvent(IncreaseMoneyRequestCommand command) {
         final MemberMoneyJpaEntity memberMoneyJpaEntity = getMemberMoneyPort.getMemberMoney(
-                new MemberMoney.MembershipId(command.getTargetMembershipId()));
-
-
+                new MemberMoney.MembershipId(command.getTargetMembershipId())
+        );
+        String aggregateIdentifier = memberMoneyJpaEntity.getAggregateIdentifier();
 
         // command
-        commandGateway.send(command).whenComplete((result, throwable) -> {
+        System.out.println("1. send increaseMoneyRequestByEvent");
+        commandGateway.send(IncreaseMemberMoneyCommand.builder()
+                .membershipId(command.getTargetMembershipId())
+                .amount(command.getAmount())
+                .aggregateIdentifier(aggregateIdentifier)
+                .build()
+        ).whenComplete((result, throwable) -> {
             if (throwable != null) {
-                System.out.println("exception: " + throwable.getMessage());
+                throwable.printStackTrace();
+                throw new RuntimeException(throwable);
             } else {
-                System.out.println("result: " + result);
+                // increase money 를 위한 event sourcing 성공함.
+                // money 증가하자!
+                System.out.println("4. increaseMoneyRequest result: " + result);
+                increaseMoneyPort.increaseMoney(
+                        new MemberMoney.MembershipId(command.getTargetMembershipId())
+                        , command.getAmount()
+                );
             }
         });
-
-        return null;
     }
 
     @Override
@@ -191,7 +203,9 @@ public class IncreaseMoneyRequestService implements IncreaseMoneyRequestUseCase,
         commandGateway.send(axonCommand).whenComplete((result, exception) -> {
             // 이벤트 받으면 jpa 사용해서 db 에 저장한다.
             if (exception != null) {
-                System.out.println("exception: " + exception.getMessage());
+//                System.out.println("exception: " + exception.getMessage());
+                exception.printStackTrace();
+                throw new RuntimeException(exception);
             } else {
                 System.out.println("result: " + result);
                 createMemberMoneyPort.createMemberMoney(
